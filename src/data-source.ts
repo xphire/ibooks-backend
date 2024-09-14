@@ -2,6 +2,7 @@ import "reflect-metadata"
 import { DataSource } from "typeorm"
 import config from 'config'
 import { User } from "./modules/User/user.model"
+import { Hotel } from "./modules/Hotel/hotel.model"
 
 
 export const AppDataSource = new DataSource({
@@ -11,7 +12,7 @@ export const AppDataSource = new DataSource({
     username: config.get("database_user"),
     password: config.get("database_password") ,
     database: config.get("database_name"),
-    entities: [User],
+    entities: [User,Hotel],
     synchronize: true,
     logging: false,
 })

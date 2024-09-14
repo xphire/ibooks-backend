@@ -3,12 +3,22 @@ import config from 'config'
 import process from 'process';
 import cors from '@fastify/cors'
 import * as Sentry from "@sentry/node";
+import {v2 as cloudinary} from 'cloudinary';
 import { AppDataSource } from './data-source';
 import { parentErrorHandler, onErrorHandler } from './utils/errorHandlers';
 import { userRoutes } from './modules/User/user.route';
+import { authRoutes } from './Auth/auth.route';
+import { hotelRoutes } from './modules/Hotel/hotel.route';
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod";
 import cookie, { FastifyCookieOptions } from '@fastify/cookie'
-import { authRoutes } from './Auth/auth.route';
+
+
+cloudinary.config({
+    cloud_name : config.get('cloudinary_cloud_name'),
+    api_key : config.get('cloudinary_api_key'),
+    api_secret : config.get('cloudinary_api_secret')
+
+})
 
 async function start(){
 
@@ -41,6 +51,7 @@ async function start(){
 
         } as FastifyCookieOptions)
 
+
         const port = config.get("port") as number || 9000
 
         await AppDataSource.initialize()
@@ -53,16 +64,21 @@ async function start(){
              return reply.status(200).send("OK")
         })
 
-        //user routes
-        fastify.withTypeProvider<ZodTypeProvider>().register(userRoutes, {
-            prefix : 'api/v1/users'
-        })
 
-        //login/auth route
+        //login/auth routes
         fastify.withTypeProvider<ZodTypeProvider>().register(authRoutes, {
             prefix : 'api/v1/auth'
         })
+
+        //user routes
+         fastify.withTypeProvider<ZodTypeProvider>().register(userRoutes, {
+            prefix : 'api/v1/users'
+        })
         
+        //hotel routes
+        fastify.withTypeProvider<ZodTypeProvider>().register(hotelRoutes, {
+            prefix : 'api/v1/hotels'
+        })
         Sentry.setupFastifyErrorHandler(fastify);
 
         //log errors on error

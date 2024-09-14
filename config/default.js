@@ -11,5 +11,8 @@ module.exports = {
     database_password: process.env["DATABASE_PASSWORD"],
     database_name: process.env["DATABASE_NAME"],
     cookie_secret: process.env["COOKIE_SECRET"],
-    frontend_url : process.env["FRONTEND_URL"]
+    frontend_url : process.env["FRONTEND_URL"],
+    cloudinary_cloud_name : process.env["CLOUDINARY_CLOUD_NAME"],
+    cloudinary_api_key : process.env["CLOUDINARY_API_KEY"],
+    cloudinary_api_secret : process.env["CLOUDINARY_API_SECRET"]
 }

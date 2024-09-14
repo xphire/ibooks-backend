@@ -6,14 +6,6 @@ import { User } from '../modules/User/user.model';
 import { issueJWT, verifyJWT } from './auth';
 
 
-
-declare module 'fastify'{
-    interface FastifyRequest{
-        userId : number
-    }
-}
-
-
 export async function loginController(request : FastifyRequest, response : FastifyReply){
 
      try {
@@ -81,4 +73,25 @@ export async function logOutController(request : FastifyRequest, response: Fasti
     })
 
     response.status(201).send()
+}
+
+
+export async function userAuthController(request : FastifyRequest, response : FastifyReply){
+
+    try {
+
+        const token = request.cookies.auth_token
+
+        if (!token) return response.status(401).send({status : 'failed', message : 'unauthorized'})
+
+        const decoded =  await verifyJWT(token)
+
+        request.userId = decoded.sub as unknown as number
+        
+    } catch (error) {
+
+        console.log(error)
+        return response.status(401).send({status : 'failed', message : 'unathenticated'})
+        
+    }
 }
