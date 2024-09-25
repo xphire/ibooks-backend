@@ -15,8 +15,6 @@ export async function createUserController(request : FastifyRequest,
 response : FastifyReply){
 
 
-    try {
-
         const body  = request.body as UserSchema.createUserRequestSchema;
 
         const existingUser = await dataSource.manager.findOneBy(User, {
@@ -48,11 +46,7 @@ response : FastifyReply){
         return response.status(201).send(rest)
 
 
-    } catch (error : unknown) {
-        
-        throw new Error(error as string)
-        
-    }
+    
 
 
 }

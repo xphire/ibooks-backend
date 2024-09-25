@@ -1,11 +1,11 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import {v2 as cloudinary, UploadApiErrorResponse, UploadApiResponse} from 'cloudinary'
 import { AppDataSource as dataSource } from "../../data-source";
-import { createHotelRequest } from "./hotel.schema";
+import { createHotelRequest, HotelParam, HotelType, UpdateHotelRequest } from "./hotel.schema";
 import { folder } from "./hotel.route";
-import fs from 'node:fs'
 import { MultipartFile } from "@fastify/multipart";
 import {Hotel} from '../Hotel/hotel.model'
+import { uploadImageToCloud } from "../../utils/uploadImageToCloud";
+
 //import { ZodError } from "zod";
 
 
@@ -26,22 +26,8 @@ export async function createHotelController (request : FastifyRequest, response 
             return path
         })
 
-        const imageUrls = await Promise.all(filePaths.map(async (path) => {
 
-            const reader =  fs.readFileSync(path)
-
-            const uploadResponse : UploadApiResponse   =  await new Promise((resolve) => {
-
-                cloudinary.uploader.upload_stream((error : UploadApiErrorResponse,uploadResult : UploadApiResponse) => {
-
-                    return resolve(uploadResult)
-
-                }).end(reader)
-            })
-
-            return uploadResponse.secure_url
-
-        }) ) 
+        const imageUrls = await uploadImageToCloud(filePaths)
 
         const hotel = new Hotel()
 
@@ -61,6 +47,81 @@ export async function createHotelController (request : FastifyRequest, response 
 
         const savedUser = await dataSource.manager.save(hotel)
 
-        return response.status(200).send(savedUser)
+        return response.status(201).send(savedUser)
 
+}
+
+
+export async function fetchUserHotels (request : FastifyRequest, response : FastifyReply){
+
+    const hotels = await dataSource.manager.findBy(Hotel, {
+          userId : request.userId
+     })
+
+
+     response.status(200).send(hotels)
+
+
+} 
+
+export async function fetchHotelById (request : FastifyRequest, response : FastifyReply){
+
+    const {hotelId}  = request.params as HotelParam
+
+    const hotel = await dataSource.manager.findOneBy(Hotel, {
+        id : hotelId,
+        userId : request.userId
+    })
+
+    // if(!hotel){
+    //     return response.status(404).send({status : 'failed', message : 'cannot find hotel'})
+    // }
+
+    return response.status(200).send(hotel)
+}
+
+export async function updateHotel(request : FastifyRequest , response : FastifyReply){
+
+    
+    const {hotelId}  = request.params as HotelParam
+
+    const hotel = await dataSource.manager.findOneBy(Hotel, {
+        id : hotelId
+    })
+
+    
+    if (!hotel){
+
+        return response.status(404).send({status :'failed', message : 'cannot find hotel' })
+    }
+
+    const receivedHotel =  UpdateHotelRequest.parse(request.body) 
+    
+    const updatedHotel : HotelType = {
+
+        ...receivedHotel,
+        lastUpdated : '',
+        userId : hotel.userId
+    }
+
+    const filePaths = request.files.map((file : MultipartFile) => {
+
+        const path = folder + file.filename
+
+        return path
+    })
+
+    const updatedImageUrls = await uploadImageToCloud(filePaths)
+
+
+    updatedHotel.imageUrls = [...updatedImageUrls, ...(updatedHotel.imageUrls || [])]
+
+    updatedHotel.lastUpdated = new Date().toISOString();
+
+
+    const savedHotel = await dataSource.manager.save(Hotel,{
+        ...updatedHotel
+    })
+
+    return response.status(200).send(savedHotel)
 }

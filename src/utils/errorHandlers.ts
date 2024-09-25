@@ -38,7 +38,7 @@ export function parentErrorHandler(error : FastifyError, request: FastifyRequest
 
 
 
-    //Custom Multer Errors
+    //Custom Errors
     if(error instanceof CustomizedError){
 
         return reply.status(error.statusCode)
