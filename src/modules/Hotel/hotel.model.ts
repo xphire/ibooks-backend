@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Booking } from "../Booking/booking.model";
+//import { Booking } from "../Booking/booking.model"
 
 @Entity()
 export class Hotel {
@@ -71,4 +73,7 @@ export class Hotel {
         nullable : false
     })
     lastUpdated: string
+
+    @OneToMany(() => Booking, (booking) => booking.hotel)
+    bookings : Booking[]
 }

@@ -1,5 +1,5 @@
 import { FastifyInstance, RouteOptions } from "fastify";
-import { createHotelController, fetchUserHotels , fetchHotelById, updateHotel } from "./hotel.controller";
+import { createHotelController, fetchUserHotels , fetchHotelById, updateHotel, searchHotels, fetchAllHotels } from "./hotel.controller";
 import { userAuthController } from "../../Auth/auth.controller";
 import multer from 'fastify-multer'
 import { randomUUID as uuid } from "crypto";
@@ -95,7 +95,7 @@ const fetchHotelByIdRouteOptions : RouteOptions = {
 
     method : 'GET',
     url : '/hotel/:hotelId',
-    onRequest : userAuthController,
+    //onRequest : userAuthController,
     handler : fetchHotelById
 }
 
@@ -132,6 +132,28 @@ const updateHotelRouteOptions : RouteOptions = {
 }
 
 
+const searchHotelsRouteOptions : RouteOptions = {
+
+
+    method : 'GET',
+    url : '/search',
+    handler : searchHotels
+
+
+}
+
+
+const fetchAllHotelsRouteOptions : RouteOptions = {
+
+
+    method : 'GET',
+    url : '/all',
+    handler : fetchAllHotels
+
+
+}
+
+
 export function hotelRoutes(app : FastifyInstance,_: unknown,done: () => void){
 
 
@@ -144,6 +166,10 @@ export function hotelRoutes(app : FastifyInstance,_: unknown,done: () => void){
     app.route(fetchHotelByIdRouteOptions)
 
     app.route(updateHotelRouteOptions)
+
+    app.route(searchHotelsRouteOptions)
+
+    app.route(fetchAllHotelsRouteOptions)
 
     done()
 }

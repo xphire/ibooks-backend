@@ -66,3 +66,28 @@ export type HotelType = TypeOf<typeof UpdateHotelRequest> & {
     lastUpdated : string
    
 }
+
+
+export type SearchQuery = {
+
+     pageSize? : string;
+     page? : string;
+     destination? : string;
+     adultCount? : string;
+     facilities? : string[];
+     childCount? : string;
+     types? : string[];
+     stars? : string[];
+     maxPrice? : string;
+     sortOption? : string 
+
+}
+
+
+export type Pagination = {
+
+    total : number;
+    page : number;
+    pages : number
+
+}

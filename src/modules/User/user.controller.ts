@@ -50,3 +50,34 @@ response : FastifyReply){
 
 
 }
+
+
+export async function fetchUser(request : FastifyRequest, response : FastifyReply){
+
+    const {userId} = request;
+
+    const user = await dataSource.manager.findOne(User, {
+
+        where : {
+            id : userId
+        },
+        select : {
+             
+            id : true,
+            firstName : true,
+            lastName : true,
+            email : true
+
+
+        }
+    })
+
+    if (!user) return response.status(404).send({message : 'Invalid User'})
+
+
+    return response.status(200).send(user)
+
+
+
+
+}

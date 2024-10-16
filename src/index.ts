@@ -9,6 +9,7 @@ import { parentErrorHandler, onErrorHandler } from './utils/errorHandlers';
 import { userRoutes } from './modules/User/user.route';
 import { authRoutes } from './Auth/auth.route';
 import { hotelRoutes } from './modules/Hotel/hotel.route';
+import { bookingRoutes } from './modules/Booking/booking.route';
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod";
 import cookie, { FastifyCookieOptions } from '@fastify/cookie'
 
@@ -79,6 +80,12 @@ async function start(){
         fastify.withTypeProvider<ZodTypeProvider>().register(hotelRoutes, {
             prefix : 'api/v1/hotels'
         })
+
+        //booking routes
+        fastify.withTypeProvider<ZodTypeProvider>().register(bookingRoutes, {
+            prefix : 'api/v1/bookings'
+        })
+
         Sentry.setupFastifyErrorHandler(fastify);
 
         //log errors on error
