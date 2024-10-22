@@ -6,7 +6,8 @@
   "author": "Abdulafeez Adetunmbi",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --import ./instrument.mjs src/index.ts"
+    "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only --import ./instrument.mjs src/index.ts",
+    "e2e": "cross-env NODE_ENV=test ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^9.4.0",
@@ -20,6 +21,7 @@
     "cloudinary": "^2.4.0",
     "config": "^3.3.12",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
     "fastify-multer": "^2.0.3",

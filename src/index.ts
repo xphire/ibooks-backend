@@ -13,7 +13,6 @@ import { bookingRoutes } from './modules/Booking/booking.route';
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod";
 import cookie, { FastifyCookieOptions } from '@fastify/cookie'
 
-
 cloudinary.config({
     cloud_name : config.get('cloudinary_cloud_name'),
     api_key : config.get('cloudinary_api_key'),
@@ -23,8 +22,9 @@ cloudinary.config({
 
 async function start(){
 
-
      try {
+
+        console.time('boot-time')
 
         const fastify = await createServer({
             logger : false
@@ -56,6 +56,10 @@ async function start(){
         const port = config.get("port") as number || 9000
 
         await AppDataSource.initialize()
+
+        // console.log(process.env['NODE_ENV'])
+
+        // console.log(config.get('database_host'))
 
     
         //health route
@@ -98,8 +102,11 @@ async function start(){
 
         console.log({
             message : `APP is listening on PORT : ${port}`,
-            time: new Date().toLocaleString()
+            time: new Date().toLocaleString(),
+            env : process.env['NODE_env']
         })
+
+        console.timeEnd('boot-time')
 
      } catch (error) {
 
